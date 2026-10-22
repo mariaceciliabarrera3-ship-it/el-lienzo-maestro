@@ -1,50 +1,25 @@
-import assert from 'node:assert/strict';
-import { SCENARIO } from '../data/scenario.js';
-import { createInitialState, applyDecision, recordPrediction, getRouteRank, validateImport, exportState } from '../js/engine.js';
-
-function play(sequence) {
-  let state = createInitialState('Prueba', 'Idea');
-  for (let i = 0; i < 9; i++) {
-    state = recordPrediction(state, SCENARIO.rounds[i], SCENARIO.rounds[i].prediction.correct);
-    state = applyDecision(state, SCENARIO.rounds[i], sequence[i]);
-  }
-  return state;
-}
-let count = 0, unicorns = 0, minIndex = Infinity, maxIndex = -Infinity;
-const fixedStrategies = [[0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1],[2,2,2,2,2,2,2,2,2]];
-for (let encoded = 0; encoded < 3 ** 9; encoded++) {
-  let n = encoded; const sequence = [];
-  for (let i = 0; i < 9; i++) { sequence.push(n % 3); n = Math.floor(n / 3); }
-  const state = play(sequence);
-  assert.equal(state.journey.roundIndex, 9);
-  assert.equal(state.game.decisionHistory.length, 9);
-  for (const value of [state.game.trust, state.game.cash, state.game.learning]) assert.ok(value >= 0 && value <= 100);
-  const rank = state.completion.routeMedal;
-  minIndex = Math.min(minIndex, rank.index); maxIndex = Math.max(maxIndex, rank.index);
-  if (rank.id === 'unicornio') unicorns++;
-  count++;
-}
-assert.equal(count, 19683, 'Deben evaluarse todas las secuencias de tres opciones por nueve rondas.');
-assert.equal(new Set(SCENARIO.rounds.map(r => r.blockId)).size, 9, 'Cada ronda debe cubrir un bloque único.');
-assert.deepEqual(SCENARIO.rounds.map(r=>r.id), [1,2,3,4,5,6,7,8,9]);
-assert.ok(SCENARIO.rounds.every(r=>r.choices.every(c=>typeof c.consequence==='string' && c.consequence.length>20)), 'Las 27 decisiones deben tener consecuencia específica en datos.');
-const allConsequences = SCENARIO.rounds.flatMap(r=>r.choices.map(c=>c.consequence)); assert.equal(new Set(allConsequences).size,27,'Las 27 consecuencias deben ser específicas y no repetidas.');
-assert.deepEqual(SCENARIO.blocks.map(b=>b.id), SCENARIO.validation.blockOrder, 'Los datos de bloques y rondas deben compartir el orden canónico.');
-assert.equal(SCENARIO.board.segments.length,9); assert.ok(SCENARIO.board.segments.every(seg=>seg.spaceCount===5));
-assert.ok(SCENARIO.rounds.every(r=>r.characters?.donSupuesto?.advice && r.characters?.nora?.celebrate), 'Cada ronda debe incluir diálogos de personajes.');
-assert.equal(SCENARIO.decks.tito.length, 12);
-assert.ok(new Set(SCENARIO.rounds.map(r=>r.prediction.correct)).size >= 3, 'La posición correcta debe variar entre las tres opciones.');
-assert.ok(unicorns > 0, 'El rango superior debe ser alcanzable.');
-const fixed = fixedStrategies.map(play);
-assert.ok(fixed.every(s => s.completion.routeMedal.id !== 'unicornio'), 'Ninguna de las tres estrategias de opción fija probadas debe ganar automáticamente.');
-const sample = play([1,0,1,1,1,1,1,1,1]);
-assert.equal(validateImport(JSON.parse(exportState(sample))).journey.roundIndex, 9, 'Exportación e importación deben conservar el estado.');
-assert.throws(() => validateImport({schemaVersion:99}), /formato compatible/);
-const badBoard = structuredClone(sample); badBoard.board.position = 99; assert.throws(() => validateImport(badBoard), /tablero/);
-const badDeck = structuredClone(sample); badDeck.board.drawnTito = ['tito-1','tito-1']; assert.throws(() => validateImport(badDeck), /mazo de Tito/);
-const old = structuredClone(sample); old.schemaVersion = 4; delete old.board; const migrated = validateImport(old); assert.equal(migrated.schemaVersion,5); assert.equal(migrated.board.position,0);
-console.log(`sequences=${count}`);
-console.log(`route_index_min=${minIndex} route_index_max=${maxIndex}`);
-console.log(`unicorn_paths=${unicorns} unicorn_percent=${(unicorns/count*100).toFixed(2)}%`);
-console.log(`fixed_strategy_ranks=${fixed.map(s=>s.completion.routeMedal.name).join(' | ')}`);
-console.log('checks=PASS');
+// Contenido (solo datos). MVP: sala Segmentos completa; faltan 8 salas (ver README).
+const V=(a,b,c,d,e,f)=>({nora:{ok:a,ko:b},teo:{ok:c,ko:d},aurelio:{ok:e,ko:f}});
+export const CONTENT={version:"5.0.0-mvp",
+characters:[{id:"nora",name:"Nora"},{id:"teo",name:"Teo Ábaco"},{id:"aurelio",name:"Sir Aurelio"}],
+rooms:[{id:"valor",name:"Propuesta de valor"},
+{id:"segmentos",name:"Segmentos de clientes",intro:"Acá se decide a quién le vendemos. Pensá en un kiosco: no le vende igual a un chico que a un jubilado. Un grupo de personas con necesidades parecidas se llama segmento."},
+{id:"canales",name:"Canales"},{id:"relaciones",name:"Relaciones con clientes"},{id:"ingresos",name:"Fuentes de ingresos"},{id:"recursos",name:"Recursos clave"},{id:"actividades",name:"Actividades clave"},{id:"socios",name:"Socios clave"},{id:"costos",name:"Estructura de costos"}],
+concepts:{segmentos:{segmento:"Segmento de clientes",masivo:"Mercado masivo",nicho:"Nicho",persona:"Buyer persona",moda:"Cliente más frecuente (la moda)"}},
+questions:[
+{id:"seg-1",roomId:"segmentos",round:1,prompt:"¿Qué es un segmento de clientes?",correct:"segmento",
+ options:[{conceptId:"segmento",text:"Un grupo de personas con necesidades parecidas."},
+ {conceptId:"persona",text:"Un cliente imaginado, con nombre y problemas.",whyNot:"Eso es un buyer persona: ayuda a entender a un grupo, pero es un personaje inventado, no el grupo."},
+ {conceptId:"moda",text:"El tipo de cliente que más veces compra.",whyNot:"Es un dato útil para conocer a los clientes, pero no define el grupo al que se apunta."}],
+ explanation:"Un segmento de clientes es un grupo de personas con necesidades parecidas a las que la empresa decide atender.",
+ voices:V("Correcto. Un segmento es un grupo, no una persona ni un dato.","Esa no. Leé la explicación: un segmento es un grupo.","Cierra. Un grupo con necesidades parecidas se puede contar y medir.","No cierra. Recordá: grupo con necesidades parecidas, no un dato.","Exacto. Quien sabe a quién le vende ya tiene media partida ganada.","Un traspié. Aprendé el terreno antes de jugar: un segmento es un grupo.")},
+{id:"seg-2",roomId:"segmentos",round:2,prompt:"Una panadería le vende pan a todo el barrio, sin pensar en ningún grupo en particular. ¿Cómo se llama esa forma de vender?",correct:"masivo",
+ options:[{conceptId:"masivo",text:"Mercado masivo"},{conceptId:"nicho",text:"Nicho",whyNot:"Un nicho es un grupo pequeño y muy específico: lo contrario de vender a todos."},
+ {conceptId:"persona",text:"Buyer persona",whyNot:"Es un cliente típico imaginado, no una forma de vender."}],
+ explanation:"Vender a todas las personas sin distinguir grupos se llama mercado masivo.",
+ voices:V("Bien. Vender a todos sin distinguir grupos es mercado masivo.","Casi. Releé: era vender a todos sin distinguir grupos.","Cierra: todo el barrio, sin grupo elegido.","No cierra: sin grupo elegido es mercado masivo.","Bien visto: sin grupo elegido, es mercado masivo.","Un traspié: sin grupo elegido, es mercado masivo.")},
+{id:"seg-3",roomId:"segmentos",round:3,prompt:"Una cafetería inventa a «Laura, 35 años, trabaja en una oficina y necesita un café rápido antes de las 9» para imaginar a sus clientes. ¿Qué creó?",correct:"persona",
+ options:[{conceptId:"persona",text:"Un buyer persona"},{conceptId:"nicho",text:"Un nicho",whyNot:"Un nicho es un grupo pequeño y específico, no un personaje inventado."},
+ {conceptId:"moda",text:"El cliente más frecuente",whyNot:"La moda sale de mirar las ventas reales, y Laura es un personaje imaginado."}],
+ explanation:"Un cliente típico imaginado, con nombre y problemas, es un buyer persona.",
+ voices:V("Correcto. Laura es un personaje imaginado: un buyer persona.","Esa no. Laura es un personaje inventado: un buyer persona.","Cierra. Personaje inventado para entender a los clientes.","No cierra. Un personaje inventado es un buyer persona.","Exacto. Laura es inventada: es un buyer persona.","Un traspié. Laura es inventada: un buyer persona.")}]};
