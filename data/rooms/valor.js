@@ -1,6 +1,3 @@
-// Sala: Propuesta de valor. Editá solo los textos entre comillas; dentro de un texto usá « » y no comillas rectas.
-// wall = colores de la pared en los 4 niveles (pelada, ronda 1, ronda 2, ronda 3).
-// PENDIENTE: intro (Nora, 2 líneas), concepts (3 a 5 conceptos de la sala) y questions (3: una por ronda). Formato: ver segmentos.js
 export default {
   "id": "valor",
   "wall": [
