@@ -1,29 +1,48 @@
-:root{--ink:#17212b;--bg:#e9edf0;--card:#fff;--teal:#1f7a8c;--gold:#e0a526;--soft:#d8dfe5}
-*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,Segoe UI,sans-serif}
-h1{font:700 1.7rem/1.2 Georgia,serif;margin:.2em 0}.lead{max-width:60ch}
-.top{display:flex;gap:.6rem;align-items:center;padding:.7rem 1rem;background:var(--ink);color:#fff}.top strong{font-family:Georgia,serif;flex:1}.top span{font-size:.8rem;opacity:.8}
-main{position:relative;max-width:760px;margin:0 auto;padding:1rem}
-.btn,.opt,.mini{font:inherit;cursor:pointer;border-radius:10px;border:2px solid var(--ink);min-height:44px;padding:.5rem 1rem;background:var(--gold);color:var(--ink);font-weight:600}
-.btn.alt,.mini{background:#fff}.mini{min-height:36px;padding:.2rem .6rem;font-size:.8rem}
-.opt{display:block;width:100%;text-align:left;margin:.5rem 0;background:#fff;font-weight:400}.opt:hover{background:#fff7dc}
-:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}input{display:block;font:inherit;padding:.5rem;margin-top:.3rem;width:100%;max-width:340px}
-.rooms{display:grid;grid-template-columns:repeat(9,minmax(70px,1fr));gap:6px;padding:0;margin:0 0 1rem;list-style:none;overflow-x:auto}
-.room{padding:.4rem;font-size:.72rem;text-align:center;border:2px dashed #9aa5af;background:#e3dcc8;min-height:64px;display:flex;align-items:center;justify-content:center}
-.lvl1{border:2px solid var(--ink);background:#f4f1e6}.lvl2{border:2px solid var(--ink);background:#bfe0d4}.lvl3{border:3px solid var(--gold);background:#8ccbb0;font-weight:700}
-.now{box-shadow:0 0 0 3px var(--teal)}.kick{color:#46525e;font-size:.9rem;margin:.2rem 0}
-.card{background:var(--card);border-radius:12px;padding:1rem;margin:.6rem 0;border:1px solid var(--soft)}.nora{border-left:6px solid var(--teal)}
-.bad{border-left:6px solid #b3261e}.good{border-left:6px solid #2e7d32}.boy{width:72px;float:right}
-#screen.fog::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 40%,#fff 0,#dfe6ea 60%,transparent 100%);animation:f 1s ease-out forwards}
-@keyframes f{from{opacity:.95}to{opacity:0}}@media (prefers-reduced-motion:reduce){#screen.fog::after{display:none}}
-.room{flex-direction:column;padding:0 0 .3rem;overflow:hidden;background:#fff;gap:.2rem;font-size:.68rem;min-height:0}.room svg{width:100%;display:block}
-.opt{display:flex;gap:.7rem;align-items:center}.av{width:56px;height:56px;flex:none}.chars{display:flex;gap:1.2rem;margin:1rem 0}.chars div{text-align:center;font-size:.8rem}.bubble{display:flex;gap:.7rem;align-items:center;margin:.5rem 0}
-/* Animación de "arreglo" cuando las salas suben de nivel */
-.room.repairing {
-  animation: repair 0.8s ease-out;
-}
-@keyframes repair {
-  0% { transform: scale(0.95); filter: brightness(0.7); }
-  50% { transform: scale(1.05); filter: brightness(1.3); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
+import{CONTENT as C,LOAD_ERRORS}from"../data/index.js";
+import{KEY,newState,present,answer,validate,exportState,roundQuestions}from"./engine.js";
+const $=q=>document.querySelector(q),scr=$("#screen"),NM=Object.fromEntries(C.characters.map(c=>[c.id,c.name]));
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let s=load(),view=s.player.started?"question":"welcome",last=null,help=false;
+function load(){try{const r=localStorage.getItem(KEY);if(r)return validate(JSON.parse(r))}catch(e){}return newState()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(s));$("#status").textContent="Guardado en este navegador"}catch(e){$("#status").textContent="No se pudo guardar: exportá una copia"}}
+// Sonido generado en el navegador (apagado hasta que la persona lo activa)
+let ac=null,dr=null,on=false;const A=()=>{ac??=new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();return ac};
+function beep(f,d,t="sine",g=.15){if(!on)return;const a=A(),o=a.createOscillator(),v=a.createGain();o.type=t;o.frequency.value=f;v.gain.setValueAtTime(g,a.currentTime);v.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(v).connect(a.destination);o.start();o.stop(a.currentTime+d)}
+const gong=()=>{[[110,2.4,.3],[220,2.2,.3],[330,1.8,.2],[587,1.2,.12],[880,.8,.08]].forEach(([f,d,g])=>beep(f,d,"sine",g))},ding=()=>{beep(660,.25);beep(880,.3)};
+function drone(n){clearInterval(dr);dr=null;if(!on||s.progress.finished)return;dr=setInterval(()=>{beep(140,.18,"sine",.12);setTimeout(()=>beep(110,.22,"sine",.09),170)},Math.max(520,1300-n*100))}
+const fog=()=>{if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;scr.classList.remove("fog");void scr.offsetWidth;scr.classList.add("fog")};
+const strip=()=>{const p=present(C,s);return`<ol class="rooms" aria-label="Salas de la empresa">${C.rooms.map(r=>`<li class="room lvl${s.wardrobe}${p&&r.id===p.q.roomId?" now":""}"><div class="wall">${roomSvg(s.wardrobe,r.wall,r.decor)}<span class="plate">${esc(r.name)}</span></div></li>`).join("")}</ol>`};
+const boy=`<svg class="boy" viewBox="0 0 60 60" role="img" aria-label="Un muchacho se agarra la cabeza"><circle cx="30" cy="30" r="22" fill="#f4d3a1" stroke="#333" stroke-width="2"/><path d="M20 26l6 3M40 26l-6 3M22 40q8-8 16 0" fill="none" stroke="#333" stroke-width="2"/><path d="M20 33v10M40 33v10" stroke="#4aa3ff" stroke-width="3"/></svg>`;
+const AV={nora:["#1f7a8c","#5b3a29"],teo:["#6b7a8f","#2b2b2b"],aurelio:["#6a1b4d","#cfcfcf"]};
+function avatar(id,l=0,cheer=false){const[c,h]=AV[id],acc={
+nora:'<circle cx="25" cy="25" r="4.5" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="35" cy="25" r="4.5" fill="none" stroke="#222" stroke-width="1.5"/>',
+teo:'<rect x="12" y="42" width="36" height="12" rx="2" fill="#c8a165" stroke="#333"/><path d="M21 42v12M30 42v12M39 42v12" stroke="#333"/>',
+aurelio:'<rect x="19" y="2" width="22" height="13" fill="#222"/><rect x="13" y="14" width="34" height="3" fill="#222"/><circle cx="35" cy="25" r="4.5" fill="none" stroke="#b8860b" stroke-width="1.5"/>'}[id];
+return`<svg class="av" viewBox="0 0 60 60" role="img" aria-label="${NM[id]}"><path d="M6 60q24-26 48 0z" fill="${c}"/><circle cx="30" cy="25" r="13" fill="#f2cfa6" stroke="#333" stroke-width="1.5"/><path d="M17 21q13-16 26 0" fill="${h}"/><circle cx="25" cy="25" r="1.4"/><circle cx="35" cy="25" r="1.4"/><path d="M26 32q4 3 8 0" fill="none" stroke="#333" stroke-width="1.4"/>${acc}${l>0?'<path d="M30 40l-3 8 3 4 3-4z" fill="#b3261e"/>':""}${l>1?'<rect x="40" y="48" width="7" height="5" fill="#fff" stroke="#333"/>':""}${l>2?'<path d="M30 54l3 3-3 3-3-3z" fill="#e0a526"/>':""}${cheer?'<path d="M47 56q9-8 6-22" fill="none" stroke="'+c+'" stroke-width="6" stroke-linecap="round"/><rect x="50" y="24" width="7" height="11" rx="3" fill="#f2cfa6" stroke="#333"/>':""}</svg>`}
+const WALL=["#cfc8b6","#dfe8ee","#9fd0c4","#7fc4a8"];
+const GEN=['<rect x="6" y="30" width="6" height="10" fill="#8b6b4a"/><circle cx="9" cy="27" r="6" fill="#4f9d69"/>','<rect x="40" y="26" width="12" height="9" fill="#fff" stroke="#17212b" stroke-width="1.5"/><path d="M42 33l3-4 3 3 2-2" stroke="#4f9d69" fill="none"/>','<rect x="18" y="42" width="24" height="5" rx="2" fill="#b3261e" opacity=".8"/>'];
+const deco=(l,d)=>(d||GEN).slice(0,l).join("");
+const roomSvg=(l,w,d)=>`<svg viewBox="0 0 60 50" aria-hidden="true"><rect width="60" height="50" fill="${(w||WALL)[l]}"/>${l===0?'<path d="M5 45l12-6M40 38l14 8" stroke="#b9ad92" stroke-width="3"/>':""}<rect y="40" width="60" height="10" fill="${l>1?"#8b6b4a":"#a89b86"}"/>${deco(l,d)}${l>2?'<path d="M30 27l2.5 5 5.5.8-4 3.9 1 5.5-5-2.6-5 2.6 1-5.5-4-3.9 5.5-.8z" fill="#e0a526"/>':""}</svg>`;
+const pop=()=>{const n=present(C,s),room=n?C.rooms.find(r=>r.id===n.q.roomId):null;return`<div class="pop">${avatar(last.char,s.wardrobe,true)}<div><b>¡${last.finished?"Todas las rondas aprobadas":last.roundPassed?"Ronda aprobada":"Tal cual"}!</b><br>${NM[last.char]} tenía la respuesta.${room&&!last.roundPassed?` Se abre la puerta de la sala ${esc(room.name)}.`:""}</div></div>`};
+function draw(){const pr=s.progress;if(pr.finished&&view==="question")view="final";let h="";
+ if(view==="welcome")h=`<h1>Tu empresa está vacía</h1><p class="lead">Nueve salas esperan su cartel y su pintura. Contestá bien todas las preguntas de una ronda para renovarlas. Un error y la ronda se pierde.</p><div class="chars">${C.characters.map(c=>`<div>${avatar(c.id,0)}<br>${esc(c.name)}</div>`).join("")}</div><label>¿Cómo te llamás? (opcional)<input id="nm" maxlength="100" value="${esc(s.player.name)}"></label><div class="row"><button class="btn" data-act="start">Empezar con sonido</button><button class="btn alt" data-act="import">Importar partida</button></div>`;
+ else if(view==="question"){const p=present(C,s),room=C.rooms.find(r=>r.id===p.q.roomId);
+  h=`${strip()}<p class="kick">Ronda ${pr.round} de 3 · ${esc(room.name)} · pregunta ${pr.index+1} de ${roundQuestions(C,pr.round).length}</p>${room.intro&&(pr.round===1||help)?`<div class="card nora bubble">${avatar("nora",s.wardrobe)}<span><b>Nora:</b> ${esc(room.intro)}</span></div>`:""}<h1>${esc(p.q.prompt)}</h1>${p.options.map(o=>`<button class="opt" data-act="pick" data-c="${o.conceptId}" data-ch="${o.char}">${avatar(o.char,s.wardrobe)}<span><b>${NM[o.char]} dice:</b> ${esc(o.text)}</span></button>`).join("")}`}
+ else if(view==="reveal"){const q=last.q,ch=q.options.find(o=>o.conceptId===last.chosen),right=q.options.find(o=>o.conceptId===q.correct),v=q.voices[last.char][last.ok?"ok":"ko"];
+  h=`${strip()}${last.ok?pop():""}<div class="card ${last.ok?"good":"bad"}">${last.ok?"":boy}<h1>${last.ok?"¡Correcto!":"Perdiste la ronda"}</h1>${last.ok?"":`<p>Volvés a la ronda ${last.lostTo}. Las salas lo muestran.</p><p><b>Elegiste:</b> ${esc(ch.text)}. ${esc(ch.whyNot||"")}</p><p><b>Era:</b> ${esc(right.text)}</p>`}<p>${esc(q.explanation)}</p><div class="bubble">${avatar(last.char,s.wardrobe)}<span><b>${NM[last.char]}:</b> «${esc(v)}»</span></div>${last.roundPassed&&!last.finished?"<p><b>¡Ronda aprobada! Las salas se renovaron.</b></p>":""}</div><div class="row"><button class="btn" data-act="next">Seguir</button>${last.ok||last.reported?"":`<button class="mini" data-act="unfair">Esta pregunta me pareció injusta</button>`}</div>${last.reported?"<p>Gracias, quedó anotado.</p>":""}`}
+ else h=`${strip()}<h1>¡Tus tres rondas están aprobadas${s.player.name?", "+esc(s.player.name):""}!</h1><p class="lead">Las salas quedaron con su pintura y su cartel. Exportá tu partida para guardarla.</p><div class="row"><button class="btn" data-act="export">Exportar partida</button><button class="btn alt" data-act="again">Jugar de nuevo</button></div>`;
+ scr.innerHTML=(LOAD_ERRORS.length?`<div class="card bad"><b>Error en el contenido de:</b> ${esc(LOAD_ERRORS.join(" · "))}</div>`:"")+h}
+function dl(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([exportState(s)],{type:"application/json"}));a.download="lienzo-partida.json";a.click()}
+scr.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+ if(a==="start"){s.player.name=$("#nm").value.slice(0,100);s.player.started=true;view="question";on=true;$("#snd").textContent="Sonido: encendido";$("#snd").setAttribute("aria-pressed",true);drone(0)}
+ else if(a==="pick"){const r=answer(C,s,b.dataset.c,b.dataset.ch);s=r.state;last={...r,chosen:b.dataset.c,char:b.dataset.ch};view="reveal";r.ok?(ding(),r.roundPassed&&setTimeout(ding,250)):gong();drone(s.progress.streak)}
+ else if(a==="next"){view=s.progress.finished?"final":"question";help=false}
+ else if(a==="help")help=!help;
+ else if(a==="unfair"){s.unfairReports.push({questionId:last.q.id,at:new Date().toISOString()});last.reported=true}
+ else if(a==="import"){$("#file").click();return}else if(a==="export"){dl();return}
+ else if(a==="again"){s=newState();s.player.started=true;view="question"}
+ save();fog();draw()});
+$("#exp").addEventListener("click",dl);
+$("#snd").addEventListener("click",e=>{on=!on;e.target.textContent="Sonido: "+(on?"encendido":"apagado");e.target.setAttribute("aria-pressed",on);if(on)ding();drone(s.progress.streak)});
+$("#file").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{s=validate(JSON.parse(await f.text()));s.player.started=true;view="question";save();draw()}catch(x){alert("No se pudo importar: "+x.message)}e.target.value=""});
+draw();
