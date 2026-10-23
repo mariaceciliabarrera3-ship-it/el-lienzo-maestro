@@ -19,7 +19,7 @@ export default {
       id: "valor-1",
       roomId: "valor",
       round: 1,
-      conceptId: "propuesta",
+      correct: "propuesta",
       prompt: "¿Qué es la propuesta de valor en un modelo de negocio?",
       options: [
         {
@@ -63,7 +63,7 @@ export default {
       id: "valor-2",
       roomId: "valor",
       round: 2,
-      conceptId: "necesidades",
+      correct: "necesidades",
       prompt: "Al definir la propuesta de valor, ¿en qué debe centrarse principalmente la empresa para resolver problemas reales?",
       options: [
         {
@@ -107,7 +107,7 @@ export default {
       id: "valor-3",
       roomId: "valor",
       round: 3,
-      conceptId: "diferenciacion",
+      correct: "diferenciacion",
       prompt: "¿Por qué es importante que la propuesta de valor ayude a la diferenciación del negocio?",
       options: [
         {
