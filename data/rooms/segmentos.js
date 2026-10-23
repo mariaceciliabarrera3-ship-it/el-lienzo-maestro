@@ -1,158 +1,161 @@
 export default {
-  id: "canales",
+  id: "segmentos",
   wall: [
     "#cfc8b6",
-    "#d4f0e0",
-    "#a8e2c0",
-    "#7fd9a8"
+    "#d4e8f0",
+    "#a8d5e2",
+    "#7bc4d9"
   ],
-  intro: "Acá definimos cómo llega nuestro producto o servicio al cliente. Pensá en una librería: puede vender en su local, por su página web o a través de una app de envíos. Esos son sus canales.",
+  intro: "Acá se decide a quién le vendemos. Pensá en un kiosco: no le vende igual a un chico que a un jubilado. Un grupo de personas con necesidades parecidas se llama segmento.",
   concepts: {
-    medio_entrega: "El medio o la forma en que un producto o servicio llega y se vende a los clientes.",
-    recursos_clave: "Lista de materiales físicos o insumos necesarios para construir un producto (no es un canal).",
-    estructura_costos: "Lista de gastos y sueldos que la empresa debe pagar (no es un canal).",
-    canal_afiliados: "Sitios web o blogs que promocionan productos mediante enlaces para atraer compradores.",
-    logistica_falsa: "Creer que un canal de venta cambia la naturaleza física de la entrega por regalos (no tiene sentido).",
-    canal_digital: "Uso de aplicaciones o plataformas en línea para entregar y vender productos."
+    propuesta_previa: "Comprender la propuesta de valor y los beneficios únicos del producto o servicio.",
+    copiar_competencia: "Copiar exactamente el perfil de clientes que utiliza la competencia.",
+    gasto_publicidad: "Invertir un presupuesto elevado en campañas publicitarias masivas.",
+    validacion_directa: "Salir a hablar directamente con los clientes y observar sus problemas reales.",
+    asumir_gustos: "Asumir que los clientes potenciales tienen exactamente los mismos gustos que el emprendedor.",
+    adivinar_oficina: "Quedarse en la oficina adivinando el comportamiento del mercado sin consultar a nadie.",
+    acelerar_desarrollo: "Acelerar el desarrollo del negocio y capturar mercado sin dispersar esfuerzos.",
+    evitar_marketing: "Evitar la necesidad de diseñar estrategias de marketing o comunicación.",
+    necesidades_fijas: "Asegurar que las necesidades de los consumidores jamás vayan a cambiar con el tiempo."
   },
   questions: [
     {
-      id: "canales-1",
-      roomId: "canales",
+      id: "segmentos-1",
+      roomId: "segmentos",
       round: 1,
-      correct: "medio_entrega",
-      prompt: "¿Qué es un canal de distribución dentro del modelo de negocio Canvas?",
+      correct: "propuesta_previa",
+      prompt: "Según la metodología del Business Model Canvas, ¿qué paso se debe realizar antes de definir a los segmentos de clientes?",
       options: [
         {
-          id: "canales-1-a",
-          conceptId: "recursos_clave",
-          text: "Es la lista de materiales físicos necesarios para construir un producto.",
-          char: "teo",
-          whyNot: "Los insumos y materiales pertenecen a los recursos clave requeridos para la producción, no al camino para entregar el producto al cliente."
-        },
-        {
-          id: "canales-1-b",
-          conceptId: "estructura_costos",
-          text: "Es la lista de todos los gastos y sueldos que la empresa debe pagar cada mes.",
+          id: "segmentos-1-a",
+          conceptId: "copiar_competencia",
+          text: "Copiar exactamente el perfil de clientes que utiliza la competencia.",
           char: "aurelio",
-          whyNot: "Esa definición corresponde a la estructura de costos y no al camino por el cual el producto llega y se vende a los clientes."
+          whyNot: "Copiar a otros competidores no te permite destacar ni comunicar los atributos y ventajas particulares de tu propia oferta."
         },
         {
-          id: "canales-1-c",
-          conceptId: "medio_entrega",
-          text: "Es el medio o la forma en que un producto o servicio llega y se vende a los clientes.",
+          id: "segmentos-1-b",
+          conceptId: "gasto_publicidad",
+          text: "Invertir un presupuesto elevado en campañas publicitarias masivas.",
+          char: "teo",
+          whyNot: "Gastar dinero en difusión sin definir primero a quién te diriges genera un desperdicio de recursos al no tener un público objetivo claro."
+        },
+        {
+          id: "segmentos-1-c",
+          conceptId: "propuesta_previa",
+          text: "Comprender la propuesta de valor y los beneficios únicos del producto o servicio.",
           char: "nora"
         }
       ],
-      explanation: "Los canales definen la ruta directa o indirecta por la cual una empresa comercializa y entrega su valor al público.",
+      explanation: "Saber con claridad qué problemas o necesidades resuelve tu solución permite identificar con mayor precisión a qué tipo de personas les aportará un valor real.",
       voices: {
         nora: {
-          ok: "Correcto. El canal es el camino que recorre el valor hasta llegar al cliente.",
-          ko: "Esa no. Leé la explicación: el canal es el medio de entrega, no los materiales ni los costos."
+          ok: "Correcto. Primero entendé qué ofrecés, después a quién se lo ofrecés.",
+          ko: "Esa no. Primero la propuesta de valor, después los segmentos."
         },
         teo: {
-          ok: "Cierra. Sin canal, el producto no llega y no hay venta que registrar.",
-          ko: "No cierra. Los costos y los materiales son recursos, no el camino de venta."
+          ok: "Cierra. Sin propuesta clara, no sabés a quién apuntar.",
+          ko: "No cierra. Gastar sin saber a quién te dirigís es tirar la plata."
         },
         aurelio: {
-          ok: "Exacto. Dominar el canal es dominar el acceso al mercado.",
-          ko: "Un traspié. Confundir costos con canales es perder el rumbo del negocio."
+          ok: "Exacto. Conocer tu valor es el primer paso para conquistar tu mercado.",
+          ko: "Un traspié. Copiar a la competencia es de cobardes, no de estrategas."
         }
       }
     },
     {
-      id: "canales-2",
-      roomId: "canales",
+      id: "segmentos-2",
+      roomId: "segmentos",
       round: 2,
-      correct: "canal_afiliados",
-      prompt: "¿Cómo funciona el programa de afiliados como canal alternativo en plataformas como Amazon?",
+      correct: "validacion_directa",
+      prompt: "¿Cuál es la forma más valiosa de investigar y validar las necesidades de los clientes?",
       options: [
         {
-          id: "canales-2-a",
-          conceptId: "canal_afiliados",
-          text: "Sitios web y blogs promocionan productos mediante enlaces y atraen más compradores.",
+          id: "segmentos-2-a",
+          conceptId: "validacion_directa",
+          text: "Salir a hablar directamente con los clientes y observar sus problemas reales.",
           char: "teo"
         },
         {
-          id: "canales-2-b",
-          conceptId: "logistica_falsa",
-          text: "Sustituye la entrega de paquetes físicos por envíos de regalos sorpresa.",
+          id: "segmentos-2-b",
+          conceptId: "asumir_gustos",
+          text: "Asumir que los clientes potenciales tienen exactamente los mismos gustos que el emprendedor.",
           char: "aurelio",
-          whyNot: "Es una estrategia de marketing y venta, no un método de cambio en la logística de entrega física de los productos."
+          whyNot: "Proyectar los gustos personales sobre el cliente puede llevar a crear productos que nadie más necesita o desea."
         },
         {
-          id: "canales-2-c",
-          conceptId: "recursos_clave",
-          text: "Permite que los clientes compren productos sin necesidad de conexión a internet.",
+          id: "segmentos-2-c",
+          conceptId: "adivinar_oficina",
+          text: "Quedarse en la oficina adivinando el comportamiento del mercado sin consultar a nadie.",
           char: "nora",
-          whyNot: "Requiere plataformas digitales e internet para redirigir tráfico mediante los enlaces de afiliado, no elimina la necesidad de conexión."
+          whyNot: "Trabajar únicamente con hipótesis internas sin validarlas externamente aumenta considerablemente el riesgo de fracaso."
         }
       ],
-      explanation: "Los afiliados ayudan a promocionar el catálogo entre sus seguidores, ampliando la visibilidad del negocio a través de sus propios medios.",
+      explanation: "Interactuar de forma directa con los usuarios potenciales permite comprobar suposiciones en el mundo real y descubrir necesidades no satisfechas.",
       voices: {
         nora: {
-          ok: "Correcto. Los afiliados extienden el alcance mediante enlaces en sus propios medios.",
-          ko: "Esa no. Los afiliados usan internet y enlaces, no eliminan la necesidad de conexión."
+          ok: "Correcto. Hablar con clientes reales es la única forma de aprender de verdad.",
+          ko: "Esa no. Adivinar desde la oficina aumenta el riesgo de fracaso."
         },
         teo: {
-          ok: "Cierra. Es una estrategia de tráfico medible que amplía la visibilidad sin costo fijo.",
-          ko: "No cierra. Sin internet no hay enlaces de afiliado, es una premisa netamente digital."
+          ok: "Cierra. Los datos reales del mercado valen más que mil suposiciones.",
+          ko: "No cierra. Asumir gustos propios no es una estrategia, es un riesgo."
         },
         aurelio: {
-          ok: "Exacto. Apalancarse en la audiencia de otros es una jugada maestra de expansión.",
-          ko: "Un traspié. Los regalos sorpresa no son un modelo de negocio escalable ni real."
+          ok: "Exacto. El mercado está en la calle, no en tu escritorio.",
+          ko: "Un traspié. Creer que todos piensan como vos es el camino al fracaso."
         }
       }
     },
     {
-      id: "canales-3",
-      roomId: "canales",
+      id: "segmentos-3",
+      roomId: "segmentos",
       round: 3,
-      correct: "canal_digital",
-      prompt: "Una panadería empieza a vender sus facturas a través de una aplicación de delivery en lugar de solo en el mostrador. ¿Qué bloque del Canvas está modificando principalmente?",
+      correct: "acelerar_desarrollo",
+      prompt: "Al iniciar una idea de negocio, ¿cuál es la principal ventaja de concentrarse en un solo segmento de clientes con alto potencial?",
       options: [
         {
-          id: "canales-3-a",
-          conceptId: "canal_digital",
-          text: "Está ampliando sus canales de distribución al agregar un medio digital para llegar al cliente.",
+          id: "segmentos-3-a",
+          conceptId: "acelerar_desarrollo",
+          text: "Acelerar el desarrollo del negocio y capturar mercado sin dispersar esfuerzos.",
           char: "aurelio"
         },
         {
-          id: "canales-3-b",
-          conceptId: "estructura_costos",
-          text: "Está cambiando la forma de interactuar, pero el cambio principal es el medio de entrega.",
+          id: "segmentos-3-b",
+          conceptId: "evitar_marketing",
+          text: "Evitar la necesidad de diseñar estrategias de marketing o comunicación.",
           char: "nora",
-          whyNot: "Aunque cambia la interacción, el núcleo de la modificación es el camino por el cual el producto llega al cliente, no solo la relación."
+          whyNot: "Aunque se elija un grupo específico, sigue siendo imprescindible adaptar y dirigir mensajes de marketing para alcanzarlos."
         },
         {
-          id: "canales-3-c",
-          conceptId: "medio_entrega",
-          text: "Está cambiando el producto que ofrece a los clientes.",
+          id: "segmentos-3-c",
+          conceptId: "necesidades_fijas",
+          text: "Asegurar que las necesidades de los consumidores jamás vayan a cambiar con el tiempo.",
           char: "teo",
-          whyNot: "Las facturas siguen siendo las mismas; lo que cambia es cómo se entregan y venden, no el producto en sí."
+          whyNot: "Las preferencias del mercado evolucionan continuamente, por lo que la segmentación es un proceso iterativo que requiere ajustes constantes."
         }
       ],
-      explanation: "Agregar una app de delivery es sumar un nuevo canal de distribución digital, sin alterar necesariamente el producto en sí.",
+      explanation: "Enfocar los recursos en un grupo prioritario permite validar hipótesis rápido, optimizar presupuestos y construir una base sólida para crecer.",
       voices: {
         nora: {
-          ok: "Correcto. Agregar una app es sumar un nuevo canal de distribución digital.",
-          ko: "Esa no. El producto es el mismo, lo que cambia es el medio por el que se entrega."
+          ok: "Correcto. Enfocar recursos en un grupo prioritario construye una base sólida.",
+          ko: "Esa no. Las preferencias del mercado evolucionan, hay que ajustarse siempre."
         },
         teo: {
-          ok: "Cierra. Una app es un canal que abre una nueva vía de ingresos medible y rastreable.",
-          ko: "No cierra. La propuesta de valor (las facturas) no cambió, solo el canal de venta."
+          ok: "Cierra. Concentrar esfuerzos optimiza el presupuesto y acelera los resultados.",
+          ko: "No cierra. Nada en el mercado es estático, la segmentación se ajusta."
         },
         aurelio: {
-          ok: "Exacto. Estar donde está el cliente, en este caso en su celular, es una ventaja competitiva.",
-          ko: "Un traspié. No confundas la relación con el medio por el que se concreta la venta."
+          ok: "Exacto. El enfoque es la clave para validar rápido y crecer con fuerza.",
+          ko: "Un traspié. El marketing siempre es necesario, por más nicho que seas."
         }
       }
     }
   ],
   decor: [
     "<rect x=\"20\" y=\"35\" width=\"20\" height=\"2\" fill=\"#a89b86\"/><rect x=\"22\" y=\"37\" width=\"2\" height=\"8\" fill=\"#a89b86\"/><rect x=\"36\" y=\"37\" width=\"2\" height=\"8\" fill=\"#a89b86\"/>",
-    "<rect x=\"20\" y=\"35\" width=\"20\" height=\"2\" fill=\"#8b6b4a\"/><rect x=\"22\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"36\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"25\" y=\"28\" width=\"10\" height=\"8\" fill=\"#c8a165\" stroke=\"#17212b\" stroke-width=\"1\"/>",
-    "<rect x=\"18\" y=\"34\" width=\"24\" height=\"3\" fill=\"#8b6b4a\"/><rect x=\"20\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"38\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"22\" y=\"25\" width=\"16\" height=\"10\" fill=\"#17212b\"/><rect x=\"24\" y=\"27\" width=\"12\" height=\"6\" fill=\"#4f9d69\"/>",
-    "<rect x=\"16\" y=\"33\" width=\"28\" height=\"4\" fill=\"#8b6b4a\"/><rect x=\"18\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"40\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"22\" y=\"25\" width=\"16\" height=\"10\" fill=\"#17212b\"/><rect x=\"24\" y=\"27\" width=\"12\" height=\"6\" fill=\"#4f9d69\"/><path d=\"M38 28l4 6h-8z\" fill=\"#e0a526\"/>"
+    "<rect x=\"20\" y=\"35\" width=\"20\" height=\"2\" fill=\"#8b6b4a\"/><rect x=\"22\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"36\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><circle cx=\"30\" cy=\"25\" r=\"8\" fill=\"none\" stroke=\"#1f7a8c\" stroke-width=\"2\"/><circle cx=\"30\" cy=\"25\" r=\"3\" fill=\"#1f7a8c\"/>",
+    "<rect x=\"18\" y=\"34\" width=\"24\" height=\"3\" fill=\"#8b6b4a\"/><rect x=\"20\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"38\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><circle cx=\"22\" cy=\"28\" r=\"4\" fill=\"#6b7a8f\"/><rect x=\"18\" y=\"32\" width=\"8\" height=\"8\" fill=\"#6b7a8f\"/><circle cx=\"38\" cy=\"28\" r=\"4\" fill=\"#6b7a8f\"/><rect x=\"34\" y=\"32\" width=\"8\" height=\"8\" fill=\"#6b7a8f\"/>",
+    "<rect x=\"16\" y=\"33\" width=\"28\" height=\"4\" fill=\"#8b6b4a\"/><rect x=\"18\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"40\" y=\"37\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"15\" y=\"18\" width=\"30\" height=\"25\" fill=\"#fff\" stroke=\"#17212b\" stroke-width=\"1.5\"/><circle cx=\"30\" cy=\"26\" r=\"6\" fill=\"#f2cfa6\"/><path d=\"M20 38q10-8 20 0\" fill=\"#1f7a8c\"/><rect x=\"38\" y=\"20\" width=\"4\" height=\"4\" fill=\"#e0a526\"/>"
   ]
 };
