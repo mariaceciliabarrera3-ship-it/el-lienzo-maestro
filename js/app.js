@@ -43,9 +43,17 @@ function beep(f, d, t = "sine", g = 0.15) {
 }
 
 const gong = () => {
-  [[110, 2.4, 0.3], [220, 2.2, 0.3], [330, 1.8, 0.2], [587, 1.2, 0.12], [880, 0.8, 0.08]].forEach(([f, d, g]) => beep(f, d, "sine", g));
+  if (!on) return;
+  beep(110, 2.4, "sine", 0.2);
+  beep(220, 2.0, "sine", 0.15);
+  beep(330, 1.5, "sine", 0.1);
 };
-const ding = () => { beep(660, 0.25); beep(880, 0.3); };
+
+const ding = () => {
+  if (!on) return;
+  beep(660, 0.3, "sine", 0.18);
+  setTimeout(() => beep(880, 0.35, "sine", 0.15), 80);
+};
 
 function drone(n) {
   if (!on || s.progress.finished) {
@@ -55,10 +63,12 @@ function drone(n) {
   const a = A();
   if (!dr) {
     const o = a.createOscillator(), v = a.createGain(), f = a.createBiquadFilter();
-    o.type = "sawtooth"; o.frequency.value = 110; f.frequency.value = 600; v.gain.value = 0;
-    o.connect(f).connect(v).connect(a.destination); o.start(); dr = { o, v };
+    o.type = "sine"; o.frequency.value = 110; f.frequency.value = 800; v.gain.value = 0;
+    o.connect(f).connect(v).connect(a.destination); o.start(); dr = { o, v, f };
   }
-  dr.v.gain.setTargetAtTime(Math.min(0.03 + n * 0.02, 0.14), a.currentTime, 0.4);
+  const vol = Math.min(0.01 + n * 0.008, 0.05);
+  dr.v.gain.setTargetAtTime(vol, a.currentTime, 0.6);
+  dr.f.frequency.setTargetAtTime(600 + n * 100, a.currentTime, 0.6);
 }
 
 const fog = () => {
@@ -116,7 +126,7 @@ function draw() {
     h = `${strip()}<p class="kick">Ronda ${pr.round} de 3 · ${esc(room.name)} · pregunta ${pr.index + 1} de ${roundQuestions(C, pr.round).length}</p>${room.intro && (pr.round === 1 || help) ? `<div class="card nora bubble">${avatar("nora", s.wardrobe)}<span><b>Nora:</b> ${esc(room.intro)}</span></div>` : ""}<h1>${esc(p.q.prompt)}</h1>${p.options.map(o => `<button class="opt" data-act="pick" data-c="${o.conceptId}" data-ch="${o.char}">${avatar(o.char, s.wardrobe)}<span><b>${NM[o.char]} dice:</b> ${esc(o.text)}</span></button>`).join("")}`;
   } else if (view === "reveal") {
     const q = last.q, ch = q.options.find(o => o.conceptId === last.chosen), right = q.options.find(o => o.conceptId === q.correct), v = q.voices[last.char][last.ok ? "ok" : "ko"];
-    h = `${strip()}${last.ok ? pop() : ""}<div class="card ${last.ok ? "good" : "bad"}">${last.ok ? "" : boy}<h1>${last.ok ? "¡Correcto!" : "Perdiste la ronda"}</h1>${last.ok ? "" : `<p>Volvés a la ronda ${last.lostTo}. Las salas lo muestran.</p><p><b>Elegiste:</b> ${esc(ch.text)}. ${esc(ch.whyNot || "")}</p><p><b>Era:</b> ${esc(right.text)}</p>`}<p>${esc(q.explanation)}</p><div class="bubble">${avatar(last.char, s.wardrobe)}<span><b>${NM[last.char]}:</b> «${esc(v)}»</span></div>${last.roundPassed && !last.finished ? "<p><b>¡Ronda aprobada! Las salas se renovaron.</b></p>" : ""}</div><div class="row"><button class="btn" data-act="next">Seguir</button>${last.ok || last.reported ? "" : `<button class="mini" data-act="unfair">Esta pregunta me pareció injusta</button>`}</div>${last.reported ? "<p>Gracias, quedó anotado.</p>" : ""}`;
+    h = `${strip()}${last.ok ? pop() : ""}<div class="card ${last.ok ? "good" : "bad"}">${last.ok ? "" : boy}<h1>${last.ok ? "¡Correcto!" : "Perdiste la ronda"}</h1>${last.ok ? "" : `<p>Volvés a la ronda ${last.lostTo}. Las salas lo muestran.</p><p><b>Elegiste:</b> ${esc(ch.text)}. ${esc(ch.whyNot || "")}</p><p><b>La respuesta correcta era:</b> ${esc(right.text)}</p>`}<p>${esc(q.explanation)}</p><div class="bubble">${avatar(last.char, s.wardrobe)}<span><b>${NM[last.char]}:</b> «${esc(v)}»</span></div>${last.roundPassed && !last.finished ? "<p><b>¡Ronda aprobada! Las salas se renovaron.</b></p>" : ""}</div><div class="row"><button class="btn" data-act="next">Seguir</button>${last.ok || last.reported ? "" : `<button class="mini" data-act="unfair">Esta pregunta me pareció injusta</button>`}</div>${last.reported ? "<p>Gracias, quedó anotado.</p>" : ""}`;
   } else {
     h = `${strip()}<h1>¡Tus tres rondas están aprobadas${s.player.name ? ", " + esc(s.player.name) : ""}!</h1><p class="lead">Las salas quedaron con su pintura y su cartel. Exportá tu partida para guardarla.</p><div class="row"><button class="btn" data-act="export">Exportar partida</button><button class="btn alt" data-act="again">Jugar de nuevo</button></div>`;
   }
