@@ -1,4 +1,3 @@
-// Orden oficial de las salas (único lugar donde se define) y carga de cada sala.
 export const ORDER = [
   ["valor", "Propuesta de valor"],
   ["segmentos", "Segmentos de clientes"],
