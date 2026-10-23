@@ -1,25 +1,10 @@
-// Contenido (solo datos). MVP: sala Segmentos completa; faltan 8 salas (ver README).
-const V=(a,b,c,d,e,f)=>({nora:{ok:a,ko:b},teo:{ok:c,ko:d},aurelio:{ok:e,ko:f}});
-export const CONTENT={version:"5.0.0-mvp",
-characters:[{id:"nora",name:"Nora"},{id:"teo",name:"Teo Ábaco"},{id:"aurelio",name:"Sir Aurelio"}],
-rooms:[{id:"valor",name:"Propuesta de valor"},
-{id:"segmentos",name:"Segmentos de clientes",intro:"Acá se decide a quién le vendemos. Pensá en un kiosco: no le vende igual a un chico que a un jubilado. Un grupo de personas con necesidades parecidas se llama segmento."},
-{id:"canales",name:"Canales"},{id:"relaciones",name:"Relaciones con clientes"},{id:"ingresos",name:"Fuentes de ingresos"},{id:"recursos",name:"Recursos clave"},{id:"actividades",name:"Actividades clave"},{id:"socios",name:"Socios clave"},{id:"costos",name:"Estructura de costos"}],
-concepts:{segmentos:{segmento:"Segmento de clientes",masivo:"Mercado masivo",nicho:"Nicho",persona:"Buyer persona",moda:"Cliente más frecuente (la moda)"}},
-questions:[
-{id:"seg-1",roomId:"segmentos",round:1,prompt:"¿Qué es un segmento de clientes?",correct:"segmento",
- options:[{conceptId:"segmento",text:"Un grupo de personas con necesidades parecidas."},
- {conceptId:"persona",text:"Un cliente imaginado, con nombre y problemas.",whyNot:"Eso es un buyer persona: ayuda a entender a un grupo, pero es un personaje inventado, no el grupo."},
- {conceptId:"moda",text:"El tipo de cliente que más veces compra.",whyNot:"Es un dato útil para conocer a los clientes, pero no define el grupo al que se apunta."}],
- explanation:"Un segmento de clientes es un grupo de personas con necesidades parecidas a las que la empresa decide atender.",
- voices:V("Correcto. Un segmento es un grupo, no una persona ni un dato.","Esa no. Leé la explicación: un segmento es un grupo.","Cierra. Un grupo con necesidades parecidas se puede contar y medir.","No cierra. Recordá: grupo con necesidades parecidas, no un dato.","Exacto. Quien sabe a quién le vende ya tiene media partida ganada.","Un traspié. Aprendé el terreno antes de jugar: un segmento es un grupo.")},
-{id:"seg-2",roomId:"segmentos",round:2,prompt:"Una panadería le vende pan a todo el barrio, sin pensar en ningún grupo en particular. ¿Cómo se llama esa forma de vender?",correct:"masivo",
- options:[{conceptId:"masivo",text:"Mercado masivo"},{conceptId:"nicho",text:"Nicho",whyNot:"Un nicho es un grupo pequeño y muy específico: lo contrario de vender a todos."},
- {conceptId:"persona",text:"Buyer persona",whyNot:"Es un cliente típico imaginado, no una forma de vender."}],
- explanation:"Vender a todas las personas sin distinguir grupos se llama mercado masivo.",
- voices:V("Bien. Vender a todos sin distinguir grupos es mercado masivo.","Casi. Releé: era vender a todos sin distinguir grupos.","Cierra: todo el barrio, sin grupo elegido.","No cierra: sin grupo elegido es mercado masivo.","Bien visto: sin grupo elegido, es mercado masivo.","Un traspié: sin grupo elegido, es mercado masivo.")},
-{id:"seg-3",roomId:"segmentos",round:3,prompt:"Una cafetería inventa a «Laura, 35 años, trabaja en una oficina y necesita un café rápido antes de las 9» para imaginar a sus clientes. ¿Qué creó?",correct:"persona",
- options:[{conceptId:"persona",text:"Un buyer persona"},{conceptId:"nicho",text:"Un nicho",whyNot:"Un nicho es un grupo pequeño y específico, no un personaje inventado."},
- {conceptId:"moda",text:"El cliente más frecuente",whyNot:"La moda sale de mirar las ventas reales, y Laura es un personaje imaginado."}],
- explanation:"Un cliente típico imaginado, con nombre y problemas, es un buyer persona.",
- voices:V("Correcto. Laura es un personaje imaginado: un buyer persona.","Esa no. Laura es un personaje inventado: un buyer persona.","Cierra. Personaje inventado para entender a los clientes.","No cierra. Un personaje inventado es un buyer persona.","Exacto. Laura es inventada: es un buyer persona.","Un traspié. Laura es inventada: un buyer persona.")}]};
+// Orden oficial de las salas (único lugar donde se define) y carga de cada sala.
+export const ORDER=[["valor","Propuesta de valor"],["segmentos","Segmentos de clientes"],["canales","Canales"],["relaciones","Relaciones con clientes"],["ingresos","Fuentes de ingresos"],["recursos","Recursos clave"],["actividades","Actividades clave"],["socios","Socios clave"],["costos","Estructura de costos"]];
+const CHARACTERS=[{id:"nora",name:"Nora"},{id:"teo",name:"Teo Ábaco"},{id:"aurelio",name:"Sir Aurelio"}];
+const loaded=await Promise.all(ORDER.map(([id])=>import(`./rooms/${id}.js`).then(m=>m.default,e=>({id,error:String(e.message||e)}))));
+export const LOAD_ERRORS=loaded.filter(r=>r.error).map(r=>`${r.id} (${r.error})`);
+const ok=loaded.filter(r=>!r.error);
+export const CONTENT={version:"5.1.0-mvp",characters:CHARACTERS,
+ rooms:ORDER.map(([id,name],i)=>({id,name,intro:loaded[i].intro,wall:loaded[i].wall,decor:loaded[i].decor})),
+ concepts:Object.fromEntries(ok.map(r=>[r.id,r.concepts||{}])),
+ questions:ok.flatMap(r=>r.questions||[])};
