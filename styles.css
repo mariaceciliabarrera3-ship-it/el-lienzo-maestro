@@ -18,3 +18,12 @@ main{position:relative;max-width:760px;margin:0 auto;padding:1rem}
 @keyframes f{from{opacity:.95}to{opacity:0}}@media (prefers-reduced-motion:reduce){#screen.fog::after{display:none}}
 .room{flex-direction:column;padding:0 0 .3rem;overflow:hidden;background:#fff;gap:.2rem;font-size:.68rem;min-height:0}.room svg{width:100%;display:block}
 .opt{display:flex;gap:.7rem;align-items:center}.av{width:56px;height:56px;flex:none}.chars{display:flex;gap:1.2rem;margin:1rem 0}.chars div{text-align:center;font-size:.8rem}.bubble{display:flex;gap:.7rem;align-items:center;margin:.5rem 0}
+/* Animación de "arreglo" cuando las salas suben de nivel */
+.room.repairing {
+  animation: repair 0.8s ease-out;
+}
+@keyframes repair {
+  0% { transform: scale(0.95); filter: brightness(0.7); }
+  50% { transform: scale(1.05); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
