@@ -1,10 +1,20 @@
-// Orden oficial de las salas (único lugar donde se define) y carga de cada sala.
-export const ORDER=[["valor","Propuesta de valor"],["segmentos","Segmentos de clientes"],["canales","Canales"],["relaciones","Relaciones con clientes"],["ingresos","Fuentes de ingresos"],["recursos","Recursos clave"],["actividades","Actividades clave"],["socios","Socios clave"],["costos","Estructura de costos"]];
-const CHARACTERS=[{id:"nora",name:"Nora"},{id:"teo",name:"Teo Ábaco"},{id:"aurelio",name:"Sir Aurelio"}];
-const loaded=await Promise.all(ORDER.map(([id])=>import(`./rooms/${id}.js`).then(m=>m.default,e=>({id,error:String(e.message||e)}))));
-export const LOAD_ERRORS=loaded.filter(r=>r.error).map(r=>`${r.id} (${r.error})`);
-const ok=loaded.filter(r=>!r.error);
-export const CONTENT={version:"5.1.0-mvp",characters:CHARACTERS,
- rooms:ORDER.map(([id,name],i)=>({id,name,intro:loaded[i].intro,wall:loaded[i].wall,decor:loaded[i].decor})),
- concepts:Object.fromEntries(ok.map(r=>[r.id,r.concepts||{}])),
- questions:ok.flatMap(r=>r.questions||[])};
+// Sala: Propuesta de valor. Editá solo los textos entre comillas; dentro de un texto usá « » y no comillas rectas.
+// wall = colores de la pared en los 4 niveles (pelada, ronda 1, ronda 2, ronda 3).
+// PENDIENTE: intro (Nora, 2 líneas), concepts (3 a 5 conceptos de la sala) y questions (3: una por ronda). Formato: ver segmentos.js
+export default {
+  "id": "valor",
+  "wall": [
+    "#cfc8b6",
+    "#fbecca",
+    "#f7d78c",
+    "#f2c14e"
+  ],
+  "intro": "",
+  "concepts": {},
+  "questions": [],
+  "decor": [
+    "<rect x=\"8\" y=\"30\" width=\"26\" height=\"3\" fill=\"#8b6b4a\"/><rect x=\"10\" y=\"33\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/><rect x=\"30\" y=\"33\" width=\"2\" height=\"8\" fill=\"#8b6b4a\"/>",
+    "<rect x=\"15\" y=\"21\" width=\"10\" height=\"9\" rx=\"1\" fill=\"#e0a526\" stroke=\"#17212b\" stroke-width=\"1.5\"/>",
+    "<path d=\"M44 20l-9 12h18z\" fill=\"#fff6c8\" opacity=\".75\"/><circle cx=\"44\" cy=\"19\" r=\"2.5\" fill=\"#17212b\"/>"
+  ]
+};
